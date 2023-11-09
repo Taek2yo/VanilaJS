@@ -11,36 +11,34 @@
 
 <body>
     <div class="container">
-        <div class="todo-title">오늘의 할일</div>
+        <div class="todo-title">Todo List</div>
         <p>
         <h4>TODO</h4>
-        <ul>
-            <li>
+        <ul class="todo-list">
+            <li class="todo-item">
                 <input type="checkbox">
                 <label>Study Vanila JS</label>
             </li>
-
         </ul>
         </p>
         <p>
-        <h4>DONE</h4>
-        <ul>
-            <li>
-                <input type="checkbox">
-                <label>ㅁㄴㅇ</label>
+        <h4>COMPLETED</h4>
+        <ul class="completed-list">
+            <li class="todo-item">
+                <input type="checkbox" checked>
+                <label>Work-out</label>
             </li>
         </ul>
         </p>
         <p>
         <h4>ADD ITEM</h4>
-        <ul>
-            <li>
-                <input type="text">
-
-            </li>
-        </ul>
+        <div class="input-wrap">
+            <input type="text" id="new-todo">
+            <button class="add-button">Add</button>
+        </div>
         </p>
     </div>
+    <script src="Todo.js"></script>
 </body>
 
 </html>
