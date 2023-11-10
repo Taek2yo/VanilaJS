@@ -1,5 +1,5 @@
-# VanilaJS 학습
-## JavaScript 깊게 공부해보기
+# VanilaJS 학습 
+> JavaScript 깊게 공부해보기
 ### 학습 목표
 #### Todo List
 - DOM 조작
