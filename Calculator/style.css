@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.calculator {
+    display: block;
+    width: 400px;
+    margin: 60px auto 0;
+    background-color: #2f2f2f;
+}
+
+.display {
+    position: relative;
+    height: 120px;
+    text-align: right;
+    background-color: #2f2f2f;
+    color: #fff;
+}
+
+.display p {
+    position: absolute;
+    margin: 0 5px auto;
+    font-size: 60px;
+    bottom: 0;
+    right: 0;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button {
+    border: 1px solid gray;
+    outline: none;
+    height: 100px;
+    width: 100px;
+    text-align: center;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.num_btn:hover {
+    background-color: lightgray;
+}
+
+.num_btn.zero {
+    width: 200px;
+}
+
+.func_btn {
+    background-color: orange;
+}
+
+.func_btn:hover {
+    background-color: rgb(255, 102, 0);
+}
