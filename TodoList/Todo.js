@@ -20,6 +20,7 @@ function addTodo() {
     todoInput.value = "";
   }
 }
+
 todoInput.addEventListener("keyup", function (event) {
   if (event.key === "Enter") {
     addTodo();
@@ -78,22 +79,31 @@ function editItem(e) {
   const btn = e.target;
   if (btn.classList.contains("edit-button")) {
     const todoLabel = btn.parentElement.querySelector(".todo-label");
-    console.log(todoLabel)
-    const inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.value = todoLabel.textContent;
-    inputField.classList.add("edit-input");
 
-    todoLabel.replaceWith(inputField);
+    // Check if the label is already being edited
+    if (!todoLabel.classList.contains("editing")) {
+      const inputField = document.createElement("input");
+      inputField.type = "text";
+      inputField.value = todoLabel.textContent;
+      inputField.classList.add("edit-input");
 
-    inputField.focus();
+      todoLabel.replaceWith(inputField);
 
-    inputField.addEventListener("keyup", function (event) {
-      if (event.key === "Enter") {
-        todoLabel.textContent = inputField.value;
-        inputField.replaceWith(todoLabel);
-      }
-    });
+      inputField.focus();
+      inputField.addEventListener("blur", function () {
+        completeEdit(inputField, todoLabel);
+      });
+
+      inputField.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+          completeEdit(inputField, todoLabel);
+        }
+      });
+    }
   }
 }
 
+function completeEdit(inputField, todoLabel) {
+  todoLabel.textContent = inputField.value;
+  inputField.replaceWith(todoLabel);
+}
