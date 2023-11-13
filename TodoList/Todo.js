@@ -80,26 +80,23 @@ function editItem(e) {
   if (btn.classList.contains("edit-button")) {
     const todoLabel = btn.parentElement.querySelector(".todo-label");
 
-    // Check if the label is already being edited
-    if (!todoLabel.classList.contains("editing")) {
-      const inputField = document.createElement("input");
-      inputField.type = "text";
-      inputField.value = todoLabel.textContent;
-      inputField.classList.add("edit-input");
+    const inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.value = todoLabel.textContent;
+    inputField.classList.add("edit-input");
 
-      todoLabel.replaceWith(inputField);
+    todoLabel.replaceWith(inputField);
 
-      inputField.focus();
-      inputField.addEventListener("blur", function () {
+    inputField.focus();
+    inputField.addEventListener("blur", function () {
+      completeEdit(inputField, todoLabel);
+    });
+
+    inputField.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
         completeEdit(inputField, todoLabel);
-      });
-
-      inputField.addEventListener("keyup", function (event) {
-        if (event.key === "Enter") {
-          completeEdit(inputField, todoLabel);
-        }
-      });
-    }
+      }
+    });
   }
 }
 
