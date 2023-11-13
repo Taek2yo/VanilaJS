@@ -12,28 +12,28 @@
 <body>
     <div class="calculator">
         <div class="display">
-            <p>0</p>
+            <p id="displayValue">0</p>
         </div>
         <div class="buttons">
-            <button class="func_btn" value="C">C</button>
-            <button class="func_btn" value="+/-">+/-</button>
-            <button class="func_btn" value="%">%</button>
-            <button class="func_btn" value="/">÷</button>
-            <button class="num_btn" value="7">7</button>
-            <button class="num_btn" value="8">8</button>
-            <button class="num_btn" value="9">9</button>
-            <button class="func_btn" value="*">×</button>
-            <button class="num_btn" value="4">4</button>
-            <button class="num_btn" value="5">5</button>
-            <button class="num_btn" value="6">6</button>
-            <button class="func_btn" value="-">−</button>
-            <button class="num_btn" value="1">1</button>
-            <button class="num_btn" value="2">2</button>
-            <button class="num_btn" value="3">3</button>
-            <button class="func_btn" value="+">+</button>
-            <button class="num_btn zero" value="0">0</button>
-            <button class="num_btn" value=".">.</button>
-            <button class="func_btn" value="=">=</button>
+            <button type="button" class="func_btn" onclick="clearResult()">C</button>
+            <button type="button" class="func_btn" onclick="plusMinus('')">+/-</button>
+            <button type="button" class="func_btn" onclick="percent()">%</button>
+            <button type="button" class="func_btn" onclick="addOperation('/')">÷</button>
+            <button type="button" class="num_btn" onclick="addValue('7')">7</button>
+            <button type="button" class="num_btn" onclick="addValue('8')">8</button>
+            <button type="button" class="num_btn" onclick="addValue('9')">9</button>
+            <button type="button" class="func_btn" onclick="addOperation('*')">×</button>
+            <button type="button" class="num_btn" onclick="addValue('4')">4</button>
+            <button type="button" class="num_btn" onclick="addValue('5')">5</button>
+            <button type="button" class="num_btn" onclick="addValue('6')">6</button>
+            <button type="button" class="func_btn" onclick="addOperation('-')">−</button>
+            <button type="button" class="num_btn" onclick="addValue('1')">1</button>
+            <button type="button" class="num_btn" onclick="addValue('2')">2</button>
+            <button type="button" class="num_btn" onclick="addValue('3')">3</button>
+            <button type="button" class="func_btn" onclick="addOperation('+')">+</button>
+            <button type="button" class="num_btn zero" onclick="addValue('0')">0</button>
+            <button type="button" class="num_btn" onclick="addDecimal()">.</button>
+            <button type="button" class="func_btn" onclick="calculate()">=</button>
         </div>
     </div>
     <script src="Calc.js"></script>

@@ -1,80 +1,90 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // 디스플레이 요소와 현재 입력 값을 저장하는 변수
-  const display = document.querySelector(".display p");
-  let currentInput = "";
+let memory = "0";
+let current = "0";
+let operation = 0;
 
-  // 숫자, 연산자, +/- 버튼에 대한 이벤트 리스너 등록
-  const buttons = document.querySelectorAll(".num_btn, .func_btn");
-  buttons.forEach(function (button) {
-    button.addEventListener("click", function () {
-      handleButtonClick(button.value);
-    });
-  });
+function updateDisplay(value) {
+  document.getElementById("displayValue").textContent = value;
+}
 
-  // = 버튼에 대한 이벤트 리스너 등록
-  const equalButton = document.querySelector(".func_btn[value='=']");
-  equalButton.addEventListener("click", function () {
-    calculateResult();
-  });
+function clearResult() {
+  current = "0";
+  operation = 0;
+  memory = "0";
+  updateDisplay(current);
+}
 
-  // C 버튼에 대한 이벤트 리스너 등록
-  const clearButton = document.querySelector(".func_btn[value='C']");
-  clearButton.addEventListener("click", function () {
-    clearDisplay();
-  });
+function addValue(num) {
+  current =
+    parseFloat(current) === 0 && !current.includes(".") ? num : current + num;
+  updateDisplay(current);
+}
 
-  // +/- 버튼에 대한 이벤트 리스너 등록
-  const plusMinusButton = document.querySelector(".func_btn[value='+/-']");
-  plusMinusButton.addEventListener("click", function () {
-    toggleSign();
-  });
+function addDecimal() {
+  if (!current.includes(".")) {
+    current += ".";
+  }
+  updateDisplay(current);
+}
 
-  // 숫자, 연산자, +/- 버튼을 클릭했을 때 호출되는 함수
-  function handleButtonClick(value) {
-    if (value === "=") {
-      calculateResult();
-    } else if (value === "+/-") {
-      toggleSign();
-    } else {
-      currentInput += value;
-      updateDisplay();
-    }
+function plusMinus() {
+  current = current.startsWith("-") ? current.slice(1) : "-" + current;
+  if (parseFloat(current) === 0 && !current.includes(".")) {
+    current = "0";
+  }
+  updateDisplay(current);
+}
+
+function addOperation(op) {
+  if (operation !== 0) {
+    calculate();
   }
 
-  // = 버튼을 클릭했을 때 호출되는 함수
-  function calculateResult() {
-    try {
-      const result = Function('"use strict"; return (' + currentInput + ')')();
-      display.textContent = result;
-      currentInput = result.toString();
-    } catch (error) {
-      display.textContent = "Error";
-    }
-  }
-  
-
-  function clearDisplay() {
-    display.textContent = "0";
-    currentInput = "";
+  if (["*", "/", "+", "-"].includes(op)) {
+    operation = ["*", "/", "+", "-"].indexOf(op) + 1;
   }
 
-  function toggleSign() {
-    // 현재 입력 값이 비어 있지 않은 경우에만 부호를 변경
-    if (currentInput !== "") {
-      // 현재 입력 값이 음수인지 확인
-      if (currentInput.startsWith("-")) {
-        // 음수일 경우 부호를 제거
-        currentInput = currentInput.slice(1);
-      } else {
-        // 양수일 경우 부호를 추가
-        currentInput = "-" + currentInput;
-      }
+  memory = current;
+  current = "";
 
-      updateDisplay();
-    }
+  updateDisplay(current);
+}
+
+function percent() {
+  current =
+    parseFloat(memory) === 0
+      ? parseFloat(current) / 100
+      : (parseFloat(current) / 100) * parseFloat(memory);
+  updateDisplay(current);
+}
+
+function calculate() {
+  const operators = ["*", "/", "+", "-"];
+
+  if (operation >= 1 && operation <= 4) {
+    current = performOperation(
+      operators[operation - 1],
+      parseFloat(memory),
+      parseFloat(current)
+    );
   }
 
-  function updateDisplay() {
-    display.textContent = currentInput;
+  operation = 0;
+  memory = "0";
+
+  updateDisplay(current);
+}
+
+function performOperation(operator, num1, num2) {
+  switch (operator) {
+    case "*":
+      return num1 * num2;
+    case "/":
+      return num2 !== 0 ? num1 / num2 : "Error";
+    case "+":
+      return num1 + num2;
+    case "-":
+      return num1 - num2;
+    default:
+      return "Error";
   }
-});
+}
