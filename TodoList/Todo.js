@@ -11,7 +11,7 @@ function addTodo() {
     newTodoItem.classList.add("todo-item");
     newTodoItem.innerHTML = `
         <input type='checkbox'>
-        <label>${newTodoText}</label>
+        <label class="todo-label">${newTodoText}</label>
         <button class="delete-button">del</button>
         <button class="edit-button">edit</button>
     `;
@@ -36,11 +36,6 @@ function toggleButton(parent, button, buttonClass) {
     parent.appendChild(newButton);
   }
 }
-/**
- * TODO : study
- *  Node, Element / parentNode, parentElement, children, childNode
- *
- *  */
 
 // Change item state
 document.addEventListener("change", changeItem);
@@ -83,7 +78,7 @@ function editItem(e) {
   const btn = e.target;
   if (btn.classList.contains("edit-button")) {
     const todoLabel = btn.parentElement.querySelector(".todo-label");
-
+    console.log(todoLabel)
     const inputField = document.createElement("input");
     inputField.type = "text";
     inputField.value = todoLabel.textContent;
