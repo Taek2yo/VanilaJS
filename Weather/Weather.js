@@ -1,6 +1,26 @@
-let today = new Date();
-let daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-let todayOfdays = daysOfWeek[today.getDay()];
+const today = new Date();
+const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const todayOfdays = daysOfWeek[today.getDay()];
+const icons = {
+  "01d": "wi-day-sunny",
+  "02d": "wi-day-cloudy",
+  "03d": "wi-cloud",
+  "04d": "wi-cloudy",
+  "09d": "wi-showers",
+  "10d": "wi-rain",
+  "11d": "wi-thunderstorm",
+  "13d": "wi-snow",
+  "50d": "wi-fog",
+  "01n": "wi-night-clear",
+  "02n": "wi-night-alt-cloudy",
+  "03n": "wi-cloud",
+  "04n": "wi-night-cloudy",
+  "09n": "wi-night-showers",
+  "10n": "wi-night-rain",
+  "11n": "wi-night-thunderstorm",
+  "13n": "wi-night-alt-snow",
+  "50n": "wi-night-fog",
+};
 
 /* header */
 function getToday() {
@@ -46,9 +66,71 @@ function createForecastElement(day) {
 }
 
 let forecastContainer = document.getElementById("forecastContainer");
-daysOfWeek
-  .filter((day) => day !== todayOfdays)
-  .forEach(function (day) {
-    let forecastElement = createForecastElement(day);
-    forecastContainer.appendChild(forecastElement);
-  });
+let todayIndex = daysOfWeek.indexOf(todayOfdays);
+
+for (let i = 1; i <= 5; i++) {
+  let nextDayIndex = (todayIndex + i) % 7;
+  let forecastElement = createForecastElement(daysOfWeek[nextDayIndex]);
+  forecastContainer.appendChild(forecastElement);
+}
+
+// get location
+const API_KEY = "api_key";
+
+const locationButton = document.getElementById("getLocation");
+locationButton.addEventListener("click", getLocation);
+const success = (position) => {
+  const { latitude, longitude } = position.coords;
+  getWeatherByCoordinates(latitude, longitude);
+  getForecastByCoordinates(latitude, longitude);
+};
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success);
+  } else {
+    alert("당신의 브라우저가 geolocate을 지원하지 않아요!");
+  }
+}
+
+// weather, forecast
+function getCityWeather(url) {
+  fetch(url)
+    .then((response) => response.json())
+    .then((json) => console.log('날씨',json))
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+function getForecast(url) {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      const forecastData = data.list.filter((obj) => obj.dt_txt.endsWith('06:00:00'));
+      console.log('예보',forecastData);
+    });
+}
+
+// api call ( by coordinate, city )
+function getWeatherByCoordinates(latitude, longitude) {
+  getCityWeather(
+    `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+  );
+}
+function getForecastByCoordinates(latitude, longitude) {
+  getForecast(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+  );
+}
+
+function getWeatherByCity(city) {
+  getCityWeather(
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+  );
+}
+function getForecastByCity(city) {
+  getForecast(
+    `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`
+  );
+}
