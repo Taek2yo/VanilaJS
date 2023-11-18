@@ -94,11 +94,21 @@ body {
     font-weight: bold;
 }
 
+.country{
+    margin-left: -5px;
+}
 .ico-temp-wrap {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
-
+.ico-temp-wrap i{
+    color: white;
+    font-size: 3rem;
+}
+.temperature{
+    font-size: 3.5rem;
+}
 /* forecast */
 .forecast-container {
     width: 100vw;

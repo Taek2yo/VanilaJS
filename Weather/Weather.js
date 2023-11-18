@@ -35,8 +35,31 @@ function getToday() {
   ).innerHTML = `${year}.${month}.${day} ${todayOfdays}`;
 }
 getToday();
-/* forecast */
-function createForecastElement(day) {
+/* forecast container */
+function updateForecastElements(forecastData) {
+  let forecastContainer = document.getElementById("forecastContainer");
+  if (!forecastContainer) {
+    forecastContainer = document.createElement("div");
+    forecastContainer.id = "forecastContainer";
+    document.body.appendChild(forecastContainer);
+  }
+
+  forecastContainer.innerHTML = "";
+
+  forecastData.forEach((dayData) => {
+    const day = getDayOfWeek(dayData.dt_txt);
+    console.log(dayData);
+    const forecastElement = createForecastElement(
+      day,
+      dayData.weather[0].icon,
+      dayData.main.temp,
+      dayData.weather[0].main
+    );
+    forecastContainer.appendChild(forecastElement);
+  });
+}
+
+function createForecastElement(day, icon, temp, desc) {
   let fieldset = document.createElement("fieldset");
   fieldset.classList.add("forecast-fieldset");
 
@@ -45,15 +68,15 @@ function createForecastElement(day) {
   fieldset.appendChild(legend);
 
   let weatherIcon = document.createElement("div");
-  weatherIcon.textContent = "Weather ico";
+  weatherIcon.innerHTML = `<i class="wi ${icons[icon]} weather-icon"></i>`;
   fieldset.appendChild(weatherIcon);
 
   let tempSpan = document.createElement("span");
-  tempSpan.textContent = "temp";
+  tempSpan.textContent = Math.floor(temp) + "°C";
   fieldset.appendChild(tempSpan);
 
   let descSpan = document.createElement("span");
-  descSpan.textContent = "desc";
+  descSpan.textContent = desc;
   fieldset.appendChild(descSpan);
 
   if (day === "Sun") {
@@ -65,15 +88,11 @@ function createForecastElement(day) {
   return fieldset;
 }
 
-let forecastContainer = document.getElementById("forecastContainer");
-let todayIndex = daysOfWeek.indexOf(todayOfdays);
-
-for (let i = 1; i <= 5; i++) {
-  let nextDayIndex = (todayIndex + i) % 7;
-  let forecastElement = createForecastElement(daysOfWeek[nextDayIndex]);
-  forecastContainer.appendChild(forecastElement);
+function getDayOfWeek(dateString) {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getUTCDay()];
 }
-
 // get location
 const API_KEY = "api_key";
 
@@ -94,10 +113,25 @@ function getLocation() {
 }
 
 // weather, forecast
+const cityEl = document.querySelector(".city");
+const countryEl = document.querySelector(".country");
+const temperature = document.querySelector(".temperature");
+const iconEL = document.querySelector(".icon");
+const descEl = document.querySelector(".desc");
+
 function getCityWeather(url) {
   fetch(url)
     .then((response) => response.json())
-    .then((json) => console.log('날씨',json))
+    .then((data) => {
+      console.log(data);
+      cityEl.innerText = data.name + ",";
+      countryEl.innerText = data.sys.country;
+      iconEL.innerHTML = `<i class="wi ${
+        icons[data.weather[0].icon]
+      } weather-icon"></i>`;
+      temperature.innerText = Math.floor(data.main.temp) + "°C";
+      descEl.innerText = `${data.weather[0].main}`;
+    })
     .catch((error) => {
       console.log(error);
     });
@@ -107,11 +141,12 @@ function getForecast(url) {
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      const forecastData = data.list.filter((obj) => obj.dt_txt.endsWith('06:00:00'));
-      console.log('예보',forecastData);
+      const forecastData = data.list.filter((obj) =>
+        obj.dt_txt.endsWith("06:00:00")
+      );
+      updateForecastElements(forecastData);
     });
 }
-
 // api call ( by coordinate, city )
 function getWeatherByCoordinates(latitude, longitude) {
   getCityWeather(
@@ -134,3 +169,20 @@ function getForecastByCity(city) {
     `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`
   );
 }
+
+// current time
+const time = document.querySelector(".time");
+
+function getCurrentTime() {
+  let currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, "0");
+  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+  const seconds = currentDate.getSeconds().toString().padStart(2, "0");
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  
+  if (time) {
+    time.innerText = currentTime;
+  }
+  requestAnimationFrame(getCurrentTime);
+}
+getCurrentTime();
