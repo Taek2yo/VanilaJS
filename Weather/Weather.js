@@ -22,6 +22,7 @@ const icons = {
   "50n": "wi-night-fog",
 };
 
+
 /* header */
 function getToday() {
   let day = today.getDate();
@@ -94,8 +95,7 @@ function getDayOfWeek(dateString) {
   return daysOfWeek[date.getUTCDay()];
 }
 // get location
-const API_KEY = "api_key";
-
+const API_KEY = config.apikey;
 const locationButton = document.getElementById("getLocation");
 locationButton.addEventListener("click", getLocation);
 const success = (position) => {
@@ -147,6 +147,7 @@ function getForecast(url) {
       updateForecastElements(forecastData);
     });
 }
+
 // api call ( by coordinate, city )
 function getWeatherByCoordinates(latitude, longitude) {
   getCityWeather(
@@ -179,10 +180,23 @@ function getCurrentTime() {
   const minutes = currentDate.getMinutes().toString().padStart(2, "0");
   const seconds = currentDate.getSeconds().toString().padStart(2, "0");
   const currentTime = `${hours}:${minutes}:${seconds}`;
-  
+
   if (time) {
     time.innerText = currentTime;
   }
   requestAnimationFrame(getCurrentTime);
 }
 getCurrentTime();
+
+// search
+const searchButton = document.querySelector(".search");
+searchButton.addEventListener("click", clickSearchBtn);
+function clickSearchBtn() {
+  const cityInput = document.getElementById("cityInput").value;
+  if (cityInput.trim() !== "") {
+    getWeatherByCity(cityInput);
+    getForecastByCity(cityInput);
+  } else {
+    alert("빈 칸을 채워주세요!");
+  }
+}
