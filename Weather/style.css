@@ -90,9 +90,26 @@ body {
 }
 
 
-.weather-container .location {
+.location {
+    display: flex;
+    width: 100%;
     font-size: 1.5rem;
     font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.guide {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.guide img {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
 }
 
 .country {

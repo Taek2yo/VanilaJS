@@ -22,7 +22,6 @@ const icons = {
   "50n": "wi-night-fog",
 };
 
-
 /* header */
 function getToday() {
   let day = today.getDate();
@@ -118,7 +117,7 @@ const countryEl = document.querySelector(".country");
 const temperature = document.querySelector(".temperature");
 const iconEL = document.querySelector(".icon");
 const descEl = document.querySelector(".desc");
-
+const guideEl = document.querySelector(".guide")
 function getCityWeather(url) {
   fetch(url)
     .then((response) => response.json())
@@ -126,6 +125,7 @@ function getCityWeather(url) {
       console.log(data);
       cityEl.innerText = data.name + ",";
       countryEl.innerText = data.sys.country;
+      guideEl.innerText = "";
       iconEL.innerHTML = `<i class="wi ${
         icons[data.weather[0].icon]
       } weather-icon"></i>`;
@@ -200,3 +200,4 @@ function clickSearchBtn() {
     alert("빈 칸을 채워주세요!");
   }
 }
+
