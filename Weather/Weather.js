@@ -1,6 +1,9 @@
+// 날짜 정보 설정
 const today = new Date();
-const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
 const todayOfdays = daysOfWeek[today.getDay()];
+
+// 아이콘 정보 설정
 const icons = {
   "01d": "wi-day-sunny",
   "02d": "wi-day-cloudy",
@@ -22,7 +25,32 @@ const icons = {
   "50n": "wi-night-fog",
 };
 
-/* header */
+// HTML 엘리먼트 캐싱
+const cityEl = document.querySelector(".city");
+const countryEl = document.querySelector(".country");
+const temperature = document.querySelector(".temperature");
+const iconEL = document.querySelector(".icon");
+const descEl = document.querySelector(".desc");
+const guideEl = document.querySelector(".guide");
+const forecastContainer = createForecastContainer();
+
+// API Key 설정
+const API_KEY = config.apikey;
+
+// 이벤트 리스너 등록
+const locationButton = document.getElementById("getLocation");
+locationButton.addEventListener("click", getLocation);
+
+const searchButton = document.querySelector(".search");
+searchButton.addEventListener("click", clickSearchBtn);
+
+// 초기 화면 설정
+function initialize() {
+  getToday();
+  getCurrentTime();
+}
+
+// 오늘 날짜 설정
 function getToday() {
   let day = today.getDate();
   let month = today.getMonth() + 1;
@@ -34,21 +62,118 @@ function getToday() {
     "today"
   ).innerHTML = `${year}.${month}.${day} ${todayOfdays}`;
 }
-getToday();
-/* forecast container */
-function updateForecastElements(forecastData) {
+
+// 현재 시간 표시
+function getCurrentTime() {
+  const time = document.querySelector(".time");
+  if (time) {
+    updateTime();
+    setInterval(updateTime, 1000);
+  }
+}
+
+function updateTime() {
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, "0");
+  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+  const seconds = currentDate.getSeconds().toString().padStart(2, "0");
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  document.querySelector(".time").innerText = currentTime;
+}
+
+// 위치 정보 가져오기
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, handleLocationError);
+  } else {
+    alert("Your browser does not support geolocation!");
+  }
+}
+
+function success(position) {
+  const { latitude, longitude } = position.coords;
+  getWeatherByCoordinates(latitude, longitude);
+  getForecastByCoordinates(latitude, longitude);
+}
+
+function handleLocationError(error) {
+  console.log(error.message);
+  alert("검색 실패");
+}
+
+// 도시별 날씨 및 예보 가져오기
+function getWeatherByCoordinates(latitude, longitude) {
+  getCityWeather(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`);
+}
+
+function getForecastByCoordinates(latitude, longitude) {
+  getForecast(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`);
+}
+
+function getWeatherByCity(city) {
+  getCityWeather(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+}
+
+function getForecastByCity(city) {
+  getForecast(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`);
+}
+
+// 날씨 정보 가져오기
+function getCityWeather(url) {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      updateWeather(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// 날씨 예보 정보 가져오기
+function getForecast(url) {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      const forecastData = data.list.filter((obj) =>
+        obj.dt_txt.endsWith("06:00:00")
+      );
+      updateForecastElements(forecastData);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// 날씨 정보 및 예보 업데이트
+function updateWeather(data) {
+  cityEl.innerText = data.name + ",";
+  countryEl.innerText = data.sys.country;
+  guideEl.innerText = "";
+  iconEL.innerHTML = `<i class="wi ${
+    icons[data.weather[0].icon]
+  } weather-icon"></i>`;
+  temperature.innerText = Math.floor(data.main.temp) + "°C";
+  descEl.innerText = `${data.weather[0].main}`;
+}
+
+// 예보 컨테이너 생성
+function createForecastContainer() {
   let forecastContainer = document.getElementById("forecastContainer");
   if (!forecastContainer) {
     forecastContainer = document.createElement("div");
     forecastContainer.id = "forecastContainer";
     document.body.appendChild(forecastContainer);
   }
+  return forecastContainer;
+}
 
+// 예보 업데이트
+function updateForecastElements(forecastData) {
   forecastContainer.innerHTML = "";
 
   forecastData.forEach((dayData) => {
     const day = getDayOfWeek(dayData.dt_txt);
-    console.log(dayData);
     const forecastElement = createForecastElement(
       day,
       dayData.weather[0].icon,
@@ -59,6 +184,14 @@ function updateForecastElements(forecastData) {
   });
 }
 
+// 요일 가져오기
+function getDayOfWeek(dateString) {
+  const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getUTCDay()];
+}
+
+// 예보 엘리먼트 생성
 function createForecastElement(day, icon, temp, desc) {
   let fieldset = document.createElement("fieldset");
   fieldset.classList.add("forecast-fieldset");
@@ -79,118 +212,16 @@ function createForecastElement(day, icon, temp, desc) {
   descSpan.textContent = desc;
   fieldset.appendChild(descSpan);
 
-  if (day === "Sun") {
+  if (day === "일") {
     legend.classList.add("day-text", "sun");
-  } else if (day === "Sat") {
+  } else if (day === "토") {
     legend.classList.add("day-text", "sat");
   }
 
   return fieldset;
 }
 
-function getDayOfWeek(dateString) {
-  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const date = new Date(dateString);
-  return daysOfWeek[date.getUTCDay()];
-}
-// get location
-const API_KEY = config.apikey;
-const locationButton = document.getElementById("getLocation");
-locationButton.addEventListener("click", getLocation);
-const success = (position) => {
-  const { latitude, longitude } = position.coords;
-  getWeatherByCoordinates(latitude, longitude);
-  getForecastByCoordinates(latitude, longitude);
-};
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success);
-  } else {
-    alert("당신의 브라우저가 geolocate을 지원하지 않아요!");
-  }
-}
-
-// weather, forecast
-const cityEl = document.querySelector(".city");
-const countryEl = document.querySelector(".country");
-const temperature = document.querySelector(".temperature");
-const iconEL = document.querySelector(".icon");
-const descEl = document.querySelector(".desc");
-const guideEl = document.querySelector(".guide")
-function getCityWeather(url) {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      cityEl.innerText = data.name + ",";
-      countryEl.innerText = data.sys.country;
-      guideEl.innerText = "";
-      iconEL.innerHTML = `<i class="wi ${
-        icons[data.weather[0].icon]
-      } weather-icon"></i>`;
-      temperature.innerText = Math.floor(data.main.temp) + "°C";
-      descEl.innerText = `${data.weather[0].main}`;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function getForecast(url) {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      const forecastData = data.list.filter((obj) =>
-        obj.dt_txt.endsWith("06:00:00")
-      );
-      updateForecastElements(forecastData);
-    });
-}
-
-// api call ( by coordinate, city )
-function getWeatherByCoordinates(latitude, longitude) {
-  getCityWeather(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
-  );
-}
-function getForecastByCoordinates(latitude, longitude) {
-  getForecast(
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
-  );
-}
-
-function getWeatherByCity(city) {
-  getCityWeather(
-    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
-  );
-}
-function getForecastByCity(city) {
-  getForecast(
-    `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`
-  );
-}
-
-// current time
-const time = document.querySelector(".time");
-
-function getCurrentTime() {
-  let currentDate = new Date();
-  const hours = currentDate.getHours().toString().padStart(2, "0");
-  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
-  const seconds = currentDate.getSeconds().toString().padStart(2, "0");
-  const currentTime = `${hours}:${minutes}:${seconds}`;
-
-  if (time) {
-    time.innerText = currentTime;
-  }
-  requestAnimationFrame(getCurrentTime);
-}
-getCurrentTime();
-
-// search
-const searchButton = document.querySelector(".search");
-searchButton.addEventListener("click", clickSearchBtn);
+// 검색 버튼 클릭 이벤트 핸들러
 function clickSearchBtn() {
   const cityInput = document.getElementById("cityInput").value;
   if (cityInput.trim() !== "") {
@@ -201,3 +232,5 @@ function clickSearchBtn() {
   }
 }
 
+// 초기화 함수 호출
+initialize();
