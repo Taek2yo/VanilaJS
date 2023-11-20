@@ -188,7 +188,8 @@ function updateForecastElements(forecastData) {
 function getDayOfWeek(dateString) {
   const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
   const date = new Date(dateString);
-  return daysOfWeek[date.getUTCDay()];
+  console.log(date.getUTCDay())
+  return daysOfWeek[date.getUTCDay() + 1];
 }
 
 // 예보 엘리먼트 생성
