@@ -20,4 +20,5 @@
   
 ## Navbar
 - css
+
 ![Desktop 2024 01 01 - 11 01 22 01](https://github.com/Taek2yo/VanilaJS/assets/110080748/f6eb90b4-1f98-43b9-942a-32f9b8832ba1)
